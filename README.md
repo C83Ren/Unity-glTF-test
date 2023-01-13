@@ -1,3 +1,8 @@
+## Project Information
+# Unity-glTF File Download via API
+A test project for learning the use case of glTF asset in Unity game
+
+## Template Information 
 # Unity 3D URP Project Template for GitHub Repository
 A template project based from Unity Hub 3D URP template Project that has been optimized for Git repository use.
 
