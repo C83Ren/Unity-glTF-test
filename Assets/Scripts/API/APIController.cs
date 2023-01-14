@@ -1,11 +1,12 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Networking;
+using MEC;
+
 namespace APISystem
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
-    using UnityEngine.Networking;
-    using MEC;
 
     public class APIController:MonoBehaviour
     {
@@ -14,7 +15,7 @@ namespace APISystem
         [Header("Server Connection")]
         [SerializeField] private string baseUrl;
 
-        private string json;
+        [SerializeField] private string json;
 
         private string ApiUrl(string api)
         {
@@ -37,33 +38,48 @@ namespace APISystem
 
         private void Start()
         {
-            
+            CallAPI();
+            SortJSON();
+            PullAssetLink();
         }
 
-        public IEnumerator<float> CallAPIGetWearable()
+        private void PullAssetLink()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SortJSON()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CallAPI()
+        {
+            Timing.RunCoroutine(CallAPIGetWearable());
+        }
+
+        private IEnumerator<float> CallAPIGetWearable()
         {
             var api = "/v1/wearable";
-            using (UnityWebRequest request = UnityWebRequest.Get(ApiUrl(api)))
-            {
-                Debug.Log("Get:" + api);
-                yield return Timing.WaitUntilDone(request.SendWebRequest());
+            using UnityWebRequest request = UnityWebRequest.Get(ApiUrl(api));
+            Debug.Log("Get:" + api);
+            yield return Timing.WaitUntilDone(request.SendWebRequest());
 
-                if (request.result == UnityWebRequest.Result.ConnectionError)
+            if (request.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.Log(request.error);
+            }
+            else
+            {
+                try
                 {
-                    Debug.Log(request.error);
+                    _instance.json = request.downloadHandler.text;
                 }
-                else
+                catch (Exception e)
                 {
-                    try
-                    {
-                        json = request.downloadHandler.text.ToString();
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogException(e);
-                    }
+                    Debug.LogException(e);
+                }
                     
-                }
             }
         }
     }
