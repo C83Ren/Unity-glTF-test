@@ -30,21 +30,21 @@ namespace APISystem
             }
         }
 
-        public JSONObject PullData(string wearableIdSearchKey)
+        public JSONNode PullData(string wearableIdSearchKey)
         {
-            DataModel searchResult = _sanitizedData.Find(entry => entry.wearableId == wearableIdSearchKey);
+            DataModel searchResult = _sanitizedData.Find(entry => entry.wearableName == wearableIdSearchKey); //why not dictionary?
             return searchResult.fileMeta;
         }
 
         private void SanitizeData()
         {
-            JSONArray _rootRawData;
-            _rootRawData = _parsedRawData.AsArray;
-            foreach (JSONObject entry in _rootRawData)
+            JSONArray rootRawData;
+            rootRawData = _parsedRawData["data"].AsArray;
+            foreach (JSONNode entry in rootRawData)
             {
                 DataModel sanitizedEntry;
-                sanitizedEntry.wearableId = entry["wearableId"].Value;
-                sanitizedEntry.fileMeta = entry["fileMeta"].AsObject;
+                sanitizedEntry.wearableName = entry["wearableName"].Value;
+                sanitizedEntry.fileMeta = entry["fileMeta"];
                 _sanitizedData.Add(sanitizedEntry);
             }
         }

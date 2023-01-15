@@ -4,7 +4,7 @@ namespace APISystem
 {
     public struct DataModel
     {
-        public string wearableId;
-        public JSONObject fileMeta;
+        public string wearableName;
+        public JSONNode fileMeta;
     }
 }

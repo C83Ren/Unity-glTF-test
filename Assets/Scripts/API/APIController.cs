@@ -1,9 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using MEC;
+using SimpleJSON;
+using UnityEngine.Serialization;
 
 namespace APISystem
 {
@@ -12,14 +13,19 @@ namespace APISystem
     {
         private static APIController _instance;
 
+        [FormerlySerializedAs("baseUrl")]
         [Header("Server Connection")]
-        [SerializeField] private string baseUrl;
-
-        [SerializeField] private string json;
+        [SerializeField] private string baseApiUrl;
+        [SerializeField] private string baseAssetsUrl;
+        
+        [Header("Data")]
+        [SerializeField] private string _json;
+        [SerializeField] private string _assetDir;
+        private JSONNode _pulledData;
 
         private string ApiUrl(string api)
         {
-            var url = baseUrl + api;
+            var url = baseApiUrl + api;
             return url;
         }
 
@@ -38,19 +44,29 @@ namespace APISystem
 
         private void Start()
         {
-            CallAPI();
+            CallAPI(); 
             SortJSON();
             PullAssetLink();
         }
 
+        
+
         private void PullAssetLink()
         {
-            throw new NotImplementedException();
+            try
+            {
+                _assetDir = _pulledData["assetBundleUrl"].Value;
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
         private void SortJSON()
         {
-            throw new NotImplementedException();
+            JSONContainer container = new JSONContainer(_instance._json);
+            _pulledData = container.PullData("test-orang-lari v0.0.1");
         }
 
         private void CallAPI()
@@ -64,6 +80,7 @@ namespace APISystem
             using UnityWebRequest request = UnityWebRequest.Get(ApiUrl(api));
             Debug.Log("Get:" + api);
             yield return Timing.WaitUntilDone(request.SendWebRequest());
+            Debug.Log(request.isDone);
 
             if (request.result == UnityWebRequest.Result.ConnectionError)
             {
@@ -73,7 +90,8 @@ namespace APISystem
             {
                 try
                 {
-                    _instance.json = request.downloadHandler.text;
+                    _instance._json = request.downloadHandler.text;
+                    Debug.Log(_instance._json);
                 }
                 catch (Exception e)
                 {
